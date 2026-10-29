@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: devlens-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////app/data/devlens.db
+      - ENVIRONMENT=production
+      - FRONTEND_ORIGIN=http://localhost
+      - JWT_SECRET=${JWT_SECRET:-devlens_production_secure_secret_key_9283719283}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - AI_PROVIDER=gemini
+      - AI_API_KEY=${AI_API_KEY:-}
+      - AI_MODEL=${AI_MODEL:-gemini-2.5-flash}
+      - MAX_CRAWL_PAGES=10
+      - CRAWL_TIMEOUT=20
+      - SSRF_ALLOW_DEMO=true
+    volumes:
+      - devlens_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: devlens-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  devlens_data:
+    name: devlens_storage
