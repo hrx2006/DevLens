@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Cpu, Lock, Mail, User, Eye, EyeOff, AlertCircle, CheckCircle, ArrowRight, Loader2, ShieldCheck, Check } from 'lucide-react';
+import AuthBrandHeader from './AuthBrandHeader';
+import { Eye, EyeOff, AlertCircle, CheckCircle, Loader2, ArrowRight, Check, Shield } from 'lucide-react';
 
 export default function RegisterPage({ onSwitchToLogin }) {
   const { register } = useAuth();
@@ -14,10 +15,29 @@ export default function RegisterPage({ onSwitchToLogin }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Password strength checks
+  // Password validation rules aligned strictly with backend security validators
   const hasMinLength = password.length >= 8;
   const hasLetter = /[a-zA-Z]/.test(password);
-  const hasNumberOrSymbol = /[\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  const hasNumberOrSymbol = /[\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
+  const hasMixedCase = /[a-z]/.test(password) && /[A-Z]/.test(password);
+  const isMatch = password.length > 0 && confirmPassword.length > 0 && password === confirmPassword;
+
+  // Dynamic strength score (0 to 4) using requested color tokens
+  const computeStrength = () => {
+    if (!password) return { score: 0, label: '', color: 'bg-[#263244]' };
+    let score = 0;
+    if (hasMinLength) score++;
+    if (hasLetter) score++;
+    if (hasNumberOrSymbol) score++;
+    if (hasMixedCase || password.length >= 12) score++;
+
+    if (score <= 1) return { score: 1, label: 'Weak', color: 'bg-[#EF4444]' };
+    if (score === 2) return { score: 2, label: 'Fair', color: 'bg-[#F59E0B]' };
+    if (score === 3) return { score: 3, label: 'Good', color: 'bg-[#6366F1]' };
+    return { score: 4, label: 'Strong', color: 'bg-[#22C55E]' };
+  };
+
+  const strength = computeStrength();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +53,7 @@ export default function RegisterPage({ onSwitchToLogin }) {
     }
 
     if (!trimmedEmail) {
-      setErrorMessage('Please enter a valid email address.');
+      setErrorMessage('Please enter a valid work email address.');
       return;
     }
 
@@ -60,7 +80,7 @@ export default function RegisterPage({ onSwitchToLogin }) {
         password,
         confirm_password: confirmPassword,
       });
-      setSuccessMessage('Account registered successfully! Loading your dashboard...');
+      setSuccessMessage('Account created successfully. Loading your dashboard...');
     } catch (err) {
       setErrorMessage(err.message || 'Registration failed. Please try a different email address.');
     } finally {
@@ -69,132 +89,131 @@ export default function RegisterPage({ onSwitchToLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-100/90 selection:bg-blue-500 selection:text-white">
-      {/* Background radial accent */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-3xl"></div>
-      </div>
+    <div className="min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 bg-[#0B0F19] text-[#F8FAFC] selection:bg-[#6366F1] selection:text-[#F8FAFC]">
+      {/* Restrained developer-grade top ambient glow */}
+      <div 
+        className="fixed inset-0 pointer-events-none opacity-40"
+        style={{
+          background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.12), transparent 70%)'
+        }}
+        aria-hidden="true"
+      />
 
-      <div className="w-full max-w-md relative z-10 space-y-6">
-        {/* Brand Header */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-slate-900 text-white shadow-xl shadow-slate-900/20 border border-slate-800">
-            <Cpu className="w-8 h-8 text-blue-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">
-              DevLens <span className="text-blue-600">AI</span>
-            </h1>
-            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
-              Intelligent Website Audit & Quality Assurance Platform
-            </p>
-          </div>
-        </div>
+      <div className="w-full max-w-[440px] relative z-10 space-y-6">
+        {/* Unified Brand Header */}
+        <AuthBrandHeader subtitle="Intelligent Website Audit & Quality Assurance" />
 
-        {/* Register Card */}
-        <div className="bg-white rounded-3xl p-8 sm:p-9 shadow-xl border border-slate-200/80 space-y-6">
+        {/* Register Form Card */}
+        <div className="bg-[#111827] border border-[#263244] rounded-xl p-6 sm:p-8 shadow-2xl shadow-black/50 space-y-5">
           <div className="space-y-1">
-            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl font-semibold tracking-tight text-[#F8FAFC]">
               Create Your Account
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">
-              Start auditing website SEO, accessibility, security, and performance.
+            </h1>
+            <p className="text-xs text-[#94A3B8] font-normal leading-relaxed">
+              Start auditing website performance, security, and accessibility.
             </p>
           </div>
 
-          {/* Error Message */}
+          {/* Error Feedback Banner */}
           {errorMessage && (
             <div
               role="alert"
-              className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start space-x-2.5 shadow-xs"
+              className="p-3 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#EF4444] text-xs flex items-start gap-2.5 leading-relaxed"
             >
-              <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
-              <span className="font-semibold leading-relaxed">{errorMessage}</span>
+              <AlertCircle className="w-4 h-4 text-[#EF4444] shrink-0 mt-0.5" />
+              <span className="font-medium">{errorMessage}</span>
             </div>
           )}
 
-          {/* Success Message */}
+          {/* Success Feedback Banner */}
           {successMessage && (
             <div
               role="status"
-              className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2.5 shadow-xs"
+              className="p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] text-xs flex items-center gap-2.5"
             >
-              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span className="font-semibold">{successMessage}</span>
+              <CheckCircle className="w-4 h-4 text-[#22C55E] shrink-0" />
+              <span className="font-medium">{successMessage}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            {/* Full Name */}
+            {/* Full Name Field */}
             <div className="space-y-1.5">
               <label
                 htmlFor="register-fullname"
-                className="block text-xs font-bold text-slate-700 tracking-wide"
+                className="block text-xs font-medium text-[#F8FAFC] tracking-wide"
               >
-                Full Name
+                Full name
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
-                </div>
-                <input
-                  id="register-fullname"
-                  name="fullName"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={fullName}
-                  onChange={(e) => {
-                    setFullName(e.target.value);
-                    setErrorMessage('');
-                  }}
-                  placeholder="Alex Morgan"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                />
-              </div>
+              <input
+                id="register-fullname"
+                name="fullName"
+                type="text"
+                autoComplete="name"
+                required
+                value={fullName}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  setErrorMessage('');
+                }}
+                placeholder="Alex Morgan"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#263244] bg-[#151D2B] text-[#F8FAFC] placeholder-[#64748B] text-xs sm:text-sm font-normal focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] transition-all duration-150"
+              />
             </div>
 
-            {/* Email Address */}
+            {/* Email Field */}
             <div className="space-y-1.5">
               <label
                 htmlFor="register-email"
-                className="block text-xs font-bold text-slate-700 tracking-wide"
+                className="block text-xs font-medium text-[#F8FAFC] tracking-wide"
               >
-                Email Address
+                Work email address
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  id="register-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setErrorMessage('');
-                  }}
-                  placeholder="auditor@company.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                />
-              </div>
+              <input
+                id="register-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrorMessage('');
+                }}
+                placeholder="alex@company.com"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#263244] bg-[#151D2B] text-[#F8FAFC] placeholder-[#64748B] text-xs sm:text-sm font-normal focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] transition-all duration-150"
+              />
             </div>
 
-            {/* Password */}
+            {/* Password Field */}
             <div className="space-y-1.5">
-              <label
-                htmlFor="register-password"
-                className="block text-xs font-bold text-slate-700 tracking-wide"
-              >
-                Password
-              </label>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="register-password"
+                  className="block text-xs font-medium text-[#F8FAFC] tracking-wide"
+                >
+                  Password
+                </label>
+                {password && (
+                  <span className="text-[11px] font-mono text-[#94A3B8]">
+                    Strength:{' '}
+                    <span
+                      className={`font-semibold ${
+                        strength.score === 1
+                          ? 'text-[#EF4444]'
+                          : strength.score === 2
+                          ? 'text-[#F59E0B]'
+                          : strength.score === 3
+                          ? 'text-[#6366F1]'
+                          : 'text-[#22C55E]'
+                      }`}
+                    >
+                      {strength.label}
+                    </span>
+                  </span>
+                )}
+              </div>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
                 <input
                   id="register-password"
                   name="password"
@@ -206,50 +225,45 @@ export default function RegisterPage({ onSwitchToLogin }) {
                     setPassword(e.target.value);
                     setErrorMessage('');
                   }}
-                  placeholder="••••••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                  placeholder="Create a strong password"
+                  className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-[#263244] bg-[#151D2B] text-[#F8FAFC] placeholder-[#64748B] text-xs sm:text-sm font-normal focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] transition-all duration-150"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
 
-              {/* Password Strength Checklist */}
+              {/* Dynamic 4-Segment Strength Indicator */}
               {password && (
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1 text-[11px]">
-                  <div className={`flex items-center space-x-1.5 ${hasMinLength ? 'text-emerald-700 font-semibold' : 'text-slate-400'}`}>
-                    <Check className={`w-3 h-3 ${hasMinLength ? 'text-emerald-600' : 'text-slate-300'}`} />
-                    <span>At least 8 characters</span>
-                  </div>
-                  <div className={`flex items-center space-x-1.5 ${hasLetter ? 'text-emerald-700 font-semibold' : 'text-slate-400'}`}>
-                    <Check className={`w-3 h-3 ${hasLetter ? 'text-emerald-600' : 'text-slate-300'}`} />
-                    <span>Contains at least one letter</span>
-                  </div>
-                  <div className={`flex items-center space-x-1.5 ${hasNumberOrSymbol ? 'text-emerald-700 font-semibold' : 'text-slate-400'}`}>
-                    <Check className={`w-3 h-3 ${hasNumberOrSymbol ? 'text-emerald-600' : 'text-slate-300'}`} />
-                    <span>Contains number or symbol</span>
+                <div className="pt-1 space-y-1.5">
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[1, 2, 3, 4].map((level) => (
+                      <div
+                        key={level}
+                        className={`h-1 rounded-full transition-all duration-300 ${
+                          strength.score >= level ? strength.color : 'bg-[#263244]'
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Confirm Password */}
+            {/* Confirm Password Field */}
             <div className="space-y-1.5">
               <label
                 htmlFor="register-confirmpassword"
-                className="block text-xs font-bold text-slate-700 tracking-wide"
+                className="block text-xs font-medium text-[#F8FAFC] tracking-wide"
               >
-                Confirm Password
+                Confirm password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
                 <input
                   id="register-confirmpassword"
                   name="confirmPassword"
@@ -261,29 +275,62 @@ export default function RegisterPage({ onSwitchToLogin }) {
                     setConfirmPassword(e.target.value);
                     setErrorMessage('');
                   }}
-                  placeholder="••••••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                  placeholder="Confirm your password"
+                  className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-[#263244] bg-[#151D2B] text-[#F8FAFC] placeholder-[#64748B] text-xs sm:text-sm font-normal focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] transition-all duration-150"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer"
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
+            {/* Security Requirements Checklist Card */}
+            <div className="p-3 rounded-lg bg-[#151D2B] border border-[#263244] space-y-1.5 text-[11px]">
+              <div className="text-[10px] uppercase font-mono tracking-wider text-[#94A3B8] font-semibold mb-1">
+                Security Requirements
+              </div>
+              <div className={`flex items-center gap-2 ${hasMinLength ? 'text-[#22C55E]' : 'text-[#94A3B8]'}`}>
+                <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${hasMinLength ? 'text-[#22C55E]' : 'text-[#64748B]'}`}>
+                  <Check className="w-3 h-3" />
+                </div>
+                <span>At least 8 characters</span>
+              </div>
+              <div className={`flex items-center gap-2 ${hasLetter ? 'text-[#22C55E]' : 'text-[#94A3B8]'}`}>
+                <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${hasLetter ? 'text-[#22C55E]' : 'text-[#64748B]'}`}>
+                  <Check className="w-3 h-3" />
+                </div>
+                <span>Contains at least one letter</span>
+              </div>
+              <div className={`flex items-center gap-2 ${hasNumberOrSymbol ? 'text-[#22C55E]' : 'text-[#94A3B8]'}`}>
+                <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${hasNumberOrSymbol ? 'text-[#22C55E]' : 'text-[#64748B]'}`}>
+                  <Check className="w-3 h-3" />
+                </div>
+                <span>Contains a number or special symbol</span>
+              </div>
+              {confirmPassword.length > 0 && (
+                <div className={`flex items-center gap-2 ${isMatch ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                  <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${isMatch ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                    <Check className="w-3 h-3" />
+                  </div>
+                  <span>{isMatch ? 'Passwords match' : 'Passwords do not match'}</span>
+                </div>
+              )}
+            </div>
+
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-bold text-xs text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] transition shadow-md shadow-blue-600/25 disabled:opacity-50 cursor-pointer mt-2"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-xs sm:text-sm text-[#F8FAFC] bg-[#6366F1] hover:bg-[#5558E6] active:bg-[#4F46E5] transition-all duration-150 shadow-sm shadow-[#6366F1]/20 border border-transparent focus:ring-2 focus:ring-[#6366F1]/40 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-2"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#F8FAFC]" />
                   <span>Creating Account...</span>
                 </>
               ) : (
@@ -295,14 +342,14 @@ export default function RegisterPage({ onSwitchToLogin }) {
             </button>
           </form>
 
-          {/* Switch to Login */}
-          <div className="pt-4 border-t border-slate-100 text-center">
-            <p className="text-xs text-slate-500 font-medium">
+          {/* Navigation to Login */}
+          <div className="pt-4 border-t border-[#263244] text-center">
+            <p className="text-xs text-[#94A3B8]">
               Already have an account?{' '}
               <button
                 type="button"
                 onClick={onSwitchToLogin}
-                className="font-bold text-blue-600 hover:text-blue-700 transition cursor-pointer underline underline-offset-2"
+                className="text-[#6366F1] hover:text-[#818CF8] hover:underline font-medium transition-colors cursor-pointer"
               >
                 Sign In
               </button>
@@ -310,13 +357,12 @@ export default function RegisterPage({ onSwitchToLogin }) {
           </div>
         </div>
 
-        {/* Security Footer Note */}
-        <div className="flex items-center justify-center space-x-2 text-[11px] text-slate-500 font-medium">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Passwords are never stored in plaintext and hashed via Argon2id</span>
+        {/* Security Infrastructure Note */}
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#94A3B8]/80 font-normal">
+          <Shield className="w-3.5 h-3.5 text-[#22C55E]" />
+          <span>Argon2id encryption · Multi-layer SSRF defense · Zero data leakage</span>
         </div>
       </div>
     </div>
   );
 }
-

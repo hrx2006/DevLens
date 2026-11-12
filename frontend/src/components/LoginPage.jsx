@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Cpu, Lock, Mail, Eye, EyeOff, AlertCircle, CheckCircle, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import AuthBrandHeader from './AuthBrandHeader';
+import { Eye, EyeOff, AlertCircle, CheckCircle, Loader2, ArrowRight, Shield } from 'lucide-react';
 
 export default function LoginPage({ onSwitchToRegister }) {
   const { login } = useAuth();
@@ -19,11 +20,11 @@ export default function LoginPage({ onSwitchToRegister }) {
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      setErrorMessage('Please enter your email address.');
+      setErrorMessage('Please enter your work email address.');
       return;
     }
     if (!password) {
-      setErrorMessage('Please enter your password.');
+      setErrorMessage('Please enter your account password.');
       return;
     }
 
@@ -34,7 +35,7 @@ export default function LoginPage({ onSwitchToRegister }) {
         password,
         remember_me: rememberMe,
       });
-      setSuccessMessage('Authentication successful! Loading your dashboard...');
+      setSuccessMessage('Authentication verified. Loading your dashboard...');
     } catch (err) {
       setErrorMessage(err.message || 'Invalid email or password. Please try again.');
     } finally {
@@ -43,58 +44,50 @@ export default function LoginPage({ onSwitchToRegister }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-100/90 selection:bg-blue-500 selection:text-white">
-      {/* Background radial accent */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-3xl"></div>
-      </div>
+    <div className="min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 bg-[#0B0F19] text-[#F8FAFC] selection:bg-[#6366F1] selection:text-[#F8FAFC]">
+      {/* Restrained developer-grade top ambient glow */}
+      <div 
+        className="fixed inset-0 pointer-events-none opacity-40"
+        style={{
+          background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.12), transparent 70%)'
+        }}
+        aria-hidden="true"
+      />
 
-      <div className="w-full max-w-md relative z-10 space-y-6">
-        {/* Brand Header */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-slate-900 text-white shadow-xl shadow-slate-900/20 border border-slate-800">
-            <Cpu className="w-8 h-8 text-blue-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">
-              DevLens <span className="text-blue-600">AI</span>
-            </h1>
-            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mt-0.5">
-              Intelligent Website Audit & Quality Assurance Platform
-            </p>
-          </div>
-        </div>
+      <div className="w-full max-w-[420px] relative z-10 space-y-6">
+        {/* Unified Brand Header */}
+        <AuthBrandHeader subtitle="Intelligent Website Audit & Quality Assurance" />
 
-        {/* Login Card */}
-        <div className="bg-white rounded-3xl p-8 sm:p-9 shadow-xl border border-slate-200/80 space-y-6">
+        {/* Login Form Card */}
+        <div className="bg-[#111827] border border-[#263244] rounded-xl p-6 sm:p-8 shadow-2xl shadow-black/50 space-y-5">
           <div className="space-y-1">
-            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl font-semibold tracking-tight text-[#F8FAFC]">
               Welcome Back
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">
+            </h1>
+            <p className="text-xs text-[#94A3B8] font-normal leading-relaxed">
               Sign in to audit, analyze, and improve website quality.
             </p>
           </div>
 
-          {/* Error Message */}
+          {/* Error Feedback Banner */}
           {errorMessage && (
             <div
               role="alert"
-              className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start space-x-2.5 shadow-xs"
+              className="p-3 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#EF4444] text-xs flex items-start gap-2.5 leading-relaxed"
             >
-              <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
-              <span className="font-semibold leading-relaxed">{errorMessage}</span>
+              <AlertCircle className="w-4 h-4 text-[#EF4444] shrink-0 mt-0.5" />
+              <span className="font-medium">{errorMessage}</span>
             </div>
           )}
 
-          {/* Success Message */}
+          {/* Success Feedback Banner */}
           {successMessage && (
             <div
               role="status"
-              className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2.5 shadow-xs"
+              className="p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] text-xs flex items-center gap-2.5"
             >
-              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span className="font-semibold">{successMessage}</span>
+              <CheckCircle className="w-4 h-4 text-[#22C55E] shrink-0" />
+              <span className="font-medium">{successMessage}</span>
             </div>
           )}
 
@@ -103,43 +96,35 @@ export default function LoginPage({ onSwitchToRegister }) {
             <div className="space-y-1.5">
               <label
                 htmlFor="login-email"
-                className="block text-xs font-bold text-slate-700 tracking-wide"
+                className="block text-xs font-medium text-[#F8FAFC] tracking-wide"
               >
-                Email Address
+                Email address
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  id="login-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setErrorMessage('');
-                  }}
-                  placeholder="auditor@company.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                />
-              </div>
+              <input
+                id="login-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrorMessage('');
+                }}
+                placeholder="name@company.com"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#263244] bg-[#151D2B] text-[#F8FAFC] placeholder-[#64748B] text-xs sm:text-sm font-normal focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] transition-all duration-150"
+              />
             </div>
 
             {/* Password Field */}
             <div className="space-y-1.5">
               <label
                 htmlFor="login-password"
-                className="block text-xs font-bold text-slate-700 tracking-wide"
+                className="block text-xs font-medium text-[#F8FAFC] tracking-wide"
               >
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
                 <input
                   id="login-password"
                   name="password"
@@ -151,43 +136,48 @@ export default function LoginPage({ onSwitchToRegister }) {
                     setPassword(e.target.value);
                     setErrorMessage('');
                   }}
-                  placeholder="••••••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 text-xs font-medium focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                  placeholder="Enter your password"
+                  className="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-[#263244] bg-[#151D2B] text-[#F8FAFC] placeholder-[#64748B] text-xs sm:text-sm font-normal focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] transition-all duration-150"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Remember Me */}
-            <div className="flex items-center justify-between text-xs text-slate-600 pt-0.5">
-              <label className="flex items-center space-x-2 cursor-pointer select-none">
+            {/* Remember Me Session Option */}
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex items-center gap-2 cursor-pointer select-none group">
                 <input
+                  id="login-remember"
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-3.5 h-3.5 cursor-pointer"
+                  className="w-3.5 h-3.5 rounded border border-[#263244] bg-[#151D2B] text-[#6366F1] focus:ring-1 focus:ring-[#6366F1] focus:ring-offset-0 focus:outline-none cursor-pointer accent-[#6366F1] transition-colors"
                 />
-                <span className="font-semibold text-slate-700">Remember this session</span>
+                <span className="text-xs text-[#94A3B8] group-hover:text-[#F8FAFC] font-normal transition-colors">
+                  Remember this session
+                </span>
               </label>
-              <span className="text-[11px] text-slate-400 font-medium">HttpOnly Session</span>
+              <span className="text-[10px] font-mono text-[#64748B] uppercase tracking-wider">
+                HttpOnly
+              </span>
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-bold text-xs text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] transition shadow-md shadow-blue-600/25 disabled:opacity-50 cursor-pointer mt-2"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-xs sm:text-sm text-[#F8FAFC] bg-[#6366F1] hover:bg-[#5558E6] active:bg-[#4F46E5] transition-all duration-150 shadow-sm shadow-[#6366F1]/20 border border-transparent focus:ring-2 focus:ring-[#6366F1]/40 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-2"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#F8FAFC]" />
                   <span>Signing In...</span>
                 </>
               ) : (
@@ -199,14 +189,14 @@ export default function LoginPage({ onSwitchToRegister }) {
             </button>
           </form>
 
-          {/* Switch to Register */}
-          <div className="pt-4 border-t border-slate-100 text-center">
-            <p className="text-xs text-slate-500 font-medium">
+          {/* Navigation to Registration */}
+          <div className="pt-4 border-t border-[#263244] text-center">
+            <p className="text-xs text-[#94A3B8]">
               Don't have an account?{' '}
               <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="font-bold text-blue-600 hover:text-blue-700 transition cursor-pointer underline underline-offset-2"
+                className="text-[#6366F1] hover:text-[#818CF8] hover:underline font-medium transition-colors cursor-pointer"
               >
                 Create an account
               </button>
@@ -214,13 +204,12 @@ export default function LoginPage({ onSwitchToRegister }) {
           </div>
         </div>
 
-        {/* Security Footer Note */}
-        <div className="flex items-center justify-center space-x-2 text-[11px] text-slate-500 font-medium">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Secured with Argon2id password encryption & isolated user scoping</span>
+        {/* Security Infrastructure Note */}
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#94A3B8]/80 font-normal">
+          <Shield className="w-3.5 h-3.5 text-[#22C55E]" />
+          <span>Argon2id encryption · Multi-layer SSRF defense · Zero data leakage</span>
         </div>
       </div>
     </div>
   );
 }
-

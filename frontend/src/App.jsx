@@ -9,6 +9,7 @@ import AuditHistory from './components/AuditHistory';
 import FutureScopeNotice from './components/FutureScopeNotice';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import AuthBrandHeader from './components/AuthBrandHeader';
 import { useAuth } from './context/AuthContext';
 import {
   runAudit,
@@ -172,21 +173,11 @@ export default function App() {
   // 1. Initial Authentication Verification Loading Splash (prevents any flash of protected content)
   if (isLoadingAuth) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-4 selection:bg-blue-500 selection:text-white">
-        <div className="flex flex-col items-center space-y-4 max-w-sm text-center">
-          <div className="p-4 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-400 shadow-2xl animate-pulse">
-            <Cpu className="w-10 h-10" />
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-xl font-black tracking-tight text-white">
-              DevLens <span className="text-blue-400">AI</span>
-            </h1>
-            <p className="text-xs text-slate-400 font-medium">
-              Verifying secure authentication session...
-            </p>
-          </div>
-          <div className="pt-2 flex items-center space-x-2 text-xs text-blue-400 font-semibold">
-            <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0B0F19] text-[#F8FAFC] p-4 selection:bg-[#6366F1] selection:text-[#F8FAFC]">
+        <div className="flex flex-col items-center space-y-5 max-w-sm text-center">
+          <AuthBrandHeader subtitle="Verifying secure authentication session..." />
+          <div className="flex items-center space-x-2 text-xs text-[#6366F1] font-medium">
+            <Loader2 className="w-4 h-4 animate-spin text-[#6366F1]" />
             <span>Establishing credentials...</span>
           </div>
         </div>

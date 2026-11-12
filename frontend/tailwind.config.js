@@ -10,6 +10,17 @@ export default {
         sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
       colors: {
+        auth: {
+          bg: '#0B0F19',
+          card: '#111827',
+          input: '#151D2B',
+          border: '#263244',
+          primary: '#6366F1',
+          text: '#F8FAFC',
+          muted: '#94A3B8',
+          success: '#22C55E',
+          error: '#EF4444',
+        },
         brand: {
           50: '#f0f7ff',
           100: '#e0effe',
